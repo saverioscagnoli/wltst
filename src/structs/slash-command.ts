@@ -6,6 +6,7 @@ import {
   GuildMember,
   PermissionResolvable
 } from "discord.js";
+import { Queue } from "./queue";
 
 interface Interaction extends CommandInteraction {
   member: GuildMember;
@@ -15,6 +16,7 @@ interface ExeOptions {
   client: Client;
   int: Interaction;
   args: CommandInteractionOptionResolver;
+  queues: Map<string, Queue>;
 }
 
 type ExeFunction = (options: ExeOptions) => void;

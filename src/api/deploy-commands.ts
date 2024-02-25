@@ -8,7 +8,7 @@ import {
 import fs from "fs/promises";
 import path from "path";
 import chalk from "chalk";
-import { SlashCommand } from "@commands";
+import { SlashCommand } from "@structs";
 
 async function registerCommands(commandsMap: Map<string, SlashCommand>) {
   let commands: ApplicationCommandDataResolvable[] = [];
@@ -27,7 +27,7 @@ async function registerCommands(commandsMap: Map<string, SlashCommand>) {
   return commands;
 }
 
-async function deployCommands(commands: any[]) {
+async function deployCommands(commands: ApplicationCommandDataResolvable[]) {
   let rest = new REST().setToken(process.env.TOKEN!);
 
   try {

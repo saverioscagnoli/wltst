@@ -1,11 +1,12 @@
 import { registerEvents, deployCommands, registerCommands } from "@api";
-import { SlashCommand } from "@commands";
+import { Queue, SlashCommand } from "@structs";
 import { Client, IntentsBitField } from "discord.js";
 import "dotenv/config";
 
 const commandsMap = new Map<string, SlashCommand>();
+const queues = new Map<string, Queue>();
 
-export { commandsMap };
+export { commandsMap, queues };
 
 const { Flags } = IntentsBitField;
 
@@ -29,3 +30,6 @@ async function main() {
 }
 
 main();
+
+process.on("unhandledRejection", console.error);
+process.on("uncaughtException", console.error);

@@ -13,12 +13,16 @@
   "dependencies": {
     "@discordjs/voice": "^0.16.1",
     "chalk": "4.1.2",
-    "cli-spinners": "^2.9.2",
     "discord.js": "^14.14.1",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "ffmpeg-static": "^5.2.0",
+    "sodium-native": "^4.0.10",
+    "yt-search": "^2.10.4",
+    "ytdl-core": "^4.11.5"
   },
   "devDependencies": {
     "@types/node": "^20.11.20",
+    "@types/yt-search": "^2.10.3",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.8",

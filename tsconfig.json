@@ -12,7 +12,7 @@
       "@main": ["index.ts"],
       "@api": ["api/index.ts"],
       "@lib": ["lib/index.ts"],
-      "@commands": ["commands/command-base"]
+      "@structs": ["structs/index.ts"]
     }
   }
 }

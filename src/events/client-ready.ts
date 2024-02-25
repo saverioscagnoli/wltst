@@ -1,5 +1,5 @@
 import { Events } from "discord.js";
-import { Event } from "./event-base";
+import { Event } from "@structs";
 import chalk from "chalk";
 
 export default new Event(Events.ClientReady, client => {

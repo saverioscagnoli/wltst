@@ -1,4 +1,4 @@
-import { SlashCommand } from "./command-base";
+import { SlashCommand } from "@structs";
 
 export default new SlashCommand({
   name: "ping",
