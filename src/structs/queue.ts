@@ -6,9 +6,9 @@ import {
 } from "@discordjs/voice";
 import { queues } from "@main";
 import { Track } from "./track";
-import { isYoutubePlaylistUrl, isYoutubeUrl } from "@lib";
+import { DEFAULT_EMBED_COLOR, isYoutubePlaylistUrl, isYoutubeUrl } from "@lib";
 import { getVideoUrlsFromPlaylist, youtubeSearch } from "@yt";
-import { TextBasedChannel } from "discord.js";
+import { EmbedBuilder, TextBasedChannel } from "discord.js";
 
 interface QueueOptions {
   connection: VoiceConnection;
@@ -86,6 +86,24 @@ class Queue {
 
     this.player.play(resource);
     this.nowPlaying = track;
+  }
+
+  public toEmbed(guildName: string, guildIcon: string) {
+    return new EmbedBuilder()
+      .setAuthor({
+        name: `Queue for ${guildName}`,
+        iconURL: guildIcon
+      })
+      .setDescription(
+        `Now Playing: **[${this.nowPlaying?.title}](${this.nowPlaying?.url})**\n\n` +
+          this.tracks
+            .map(
+              (track, i) =>
+                `**\`${i + 1}.\`** - **[${track.title}](${track.url})**`
+            )
+            .join("\n")
+      )
+      .setColor(DEFAULT_EMBED_COLOR);
   }
 }
 

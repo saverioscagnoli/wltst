@@ -1,13 +1,13 @@
 import { createAudioResource } from "@discordjs/voice";
-import { YTDL_DEFAULT_OPTIONS } from "@lib";
+import { DEFAULT_EMBED_COLOR, YTDL_DEFAULT_OPTIONS } from "@lib";
 import { EmbedBuilder } from "discord.js";
 import ytdl from "ytdl-core";
 
 class Track {
   public title: string;
-  private author: ytdl.Author;
-  private thumbnail: string;
-  private url: string;
+  public author: ytdl.Author;
+  public thumbnail: string;
+  public url: string;
 
   public constructor(
     title: string,
@@ -41,7 +41,7 @@ class Track {
       .setTitle(this.title)
       .setURL(this.url)
       .setImage(this.thumbnail)
-      .setColor(0x00b3b3)
+      .setColor(DEFAULT_EMBED_COLOR)
       .setFooter({
         text: this.author.name,
         iconURL: this.author.thumbnails?.[0].url

@@ -37,7 +37,7 @@ export default new SlashCommand({
       });
 
       let queue = new Queue({ connection, channel: int.channel! });
-
+      
       queues.set(int.guildId, queue);
 
       let track = await queue.addTrack(query);
