@@ -80,6 +80,14 @@ class Queue {
     });
   }
 
+  public skip(n: number) {
+    for (let i = 0; i < n - 1; i++) {
+      this.tracks.shift();
+    }
+
+    this.player.stop();
+  }
+
   private playTrack() {
     let track = this.tracks.shift()!;
     let resource = track.getSource();
