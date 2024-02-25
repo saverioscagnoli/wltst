@@ -6,21 +6,26 @@ import {
 } from "@discordjs/voice";
 import { queues } from "@main";
 import { Track } from "./track";
-import { TrackType, isYoutubeUrl } from "@lib";
+import { TrackType, isYoutubePlaylistUrl, isYoutubeUrl } from "@lib";
+import { getVideoUrlsFromPlaylist } from "@yt";
+import { TextBasedChannel } from "discord.js";
 
 interface QueueOptions {
   connection: VoiceConnection;
+  channel: TextBasedChannel;
 }
 
 class Queue {
   private connection: VoiceConnection;
+  private channel: TextBasedChannel;
   private player: AudioPlayer;
   private tracks: Track[];
-  
+
   public nowPlaying: Track | null;
 
-  public constructor({ connection }: QueueOptions) {
+  public constructor({ connection, channel }: QueueOptions) {
     this.connection = connection;
+    this.channel = channel;
     this.player = createAudioPlayer();
     this.tracks = [];
     this.nowPlaying = null;
@@ -33,7 +38,21 @@ class Queue {
   public async addTrack(trackQuery: string) {
     let type: TrackType;
 
-    if (isYoutubeUrl(trackQuery)) {
+    if (isYoutubePlaylistUrl(trackQuery)) {
+      let trackUrls = await getVideoUrlsFromPlaylist(
+        trackQuery.split("&list=")[1]
+      );
+
+      let tracks: Track[] = [];
+
+      for (let url of trackUrls) {
+        let track = await Track.build(url, TrackType.YoutubeUrl);
+        this.tracks.push(track);
+        tracks.push(track);
+      }
+
+      return tracks[0];
+    } else if (isYoutubeUrl(trackQuery)) {
       type = TrackType.YoutubeUrl;
     } else {
       type = TrackType.Query;
@@ -41,6 +60,8 @@ class Queue {
 
     let track = await Track.build(trackQuery, type);
     this.tracks.push(track);
+
+    return track;
   }
 
   public play() {
@@ -56,6 +77,7 @@ class Queue {
       }
 
       this.playTrack();
+      await this.channel.send({ embeds: [this.nowPlaying!.toEmbed()] });
     });
   }
 

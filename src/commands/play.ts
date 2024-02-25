@@ -24,6 +24,8 @@ export default new SlashCommand({
       return;
     }
 
+    await int.deferReply();
+
     let query = int.options.get("query")?.value as string;
 
     if (!queues.has(int.guildId)) {
@@ -34,11 +36,15 @@ export default new SlashCommand({
         selfDeaf: false
       });
 
-      let queue = new Queue({ connection });
+      let queue = new Queue({ connection, channel: int.channel! });
 
       queues.set(int.guildId, queue);
 
-      await queue.addTrack(query);
+      let track = await queue.addTrack(query);
+
+      await int.editReply({
+        embeds: [track.toEmbed()]
+      });
 
       queue.play();
     } else {
@@ -48,7 +54,11 @@ export default new SlashCommand({
         throw new Error("Queue not found. There was an unkonwn error.");
       }
 
-      await queue.addTrack(query);
+      let track = await queue.addTrack(query);
+
+      await int.editReply(
+        `**\`${track.title}\`** has been added to the queue! 🎶`
+      );
     }
   }
 });

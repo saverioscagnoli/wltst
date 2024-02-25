@@ -12,7 +12,8 @@
       "@main": ["index.ts"],
       "@api": ["api/index.ts"],
       "@lib": ["lib/index.ts"],
-      "@structs": ["structs/index.ts"]
+      "@structs": ["structs/index.ts"],
+      "@yt": ["yt/index.ts"],
     }
   }
 }
