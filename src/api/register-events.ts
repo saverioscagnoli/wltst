@@ -9,11 +9,11 @@ async function registerEvents(client: Client) {
 
   for (let file of files) {
     let eventPath = path.join(Paths.Events, file);
-    let event = await import(eventPath);
+    let { default: event } = await import(eventPath);
 
-    if (!event.default) continue;
+    if (!event) continue;
 
-    client.on(event.default.name, event.default.callback.bind(null, client));
+    client.on(event.name, event.callback);
   }
 
   console.log(chalk.green(`Registered ${files.length - 1} events.`));

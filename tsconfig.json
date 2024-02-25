@@ -4,11 +4,15 @@
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
+    "moduleResolution": "node",
+    "allowJs": true,
     "outDir": "dist",
     "baseUrl": "src",
     "paths": {
+      "@main": ["index.ts"],
       "@api": ["api/index.ts"],
-      "@lib": ["lib/index.ts"]
+      "@lib": ["lib/index.ts"],
+      "@commands": ["commands/command-base"]
     }
   }
 }

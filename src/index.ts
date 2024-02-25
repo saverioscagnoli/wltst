@@ -1,10 +1,13 @@
-import { registerEvents } from "@api";
+import { registerEvents, deployCommands, registerCommands } from "@api";
+import { SlashCommand } from "@commands";
 import { Client, IntentsBitField } from "discord.js";
 import "dotenv/config";
 
-const { Flags } = IntentsBitField;
+const commandsMap = new Map<string, SlashCommand>();
 
-const commands = new Map<string, unknown>();
+export { commandsMap };
+
+const { Flags } = IntentsBitField;
 
 async function main() {
   const client = new Client({
@@ -12,11 +15,15 @@ async function main() {
       Flags.Guilds,
       Flags.GuildMessages,
       Flags.GuildMessageTyping,
-      Flags.GuildVoiceStates
+      Flags.GuildVoiceStates,
+      Flags.GuildIntegrations
     ]
   });
 
   await registerEvents(client);
+
+  let commands = await registerCommands(commandsMap);
+  await deployCommands(commands);
 
   client.login(process.env.TOKEN);
 }
