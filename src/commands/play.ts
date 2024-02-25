@@ -1,5 +1,5 @@
 import { joinVoiceChannel } from "@discordjs/voice";
-import { Queue, SlashCommand } from "@structs";
+import { Queue, SlashCommand, Track } from "@structs";
 import { ApplicationCommandOptionType } from "discord.js";
 
 export default new SlashCommand({
@@ -37,13 +37,13 @@ export default new SlashCommand({
       });
 
       let queue = new Queue({ connection, channel: int.channel! });
-      
+
       queues.set(int.guildId, queue);
 
-      let track = await queue.addTrack(query);
+      let tracks = await queue.addTrack(query);
 
       await int.editReply({
-        embeds: [track.toEmbed()]
+        embeds: [tracks[0].toEmbed()]
       });
 
       queue.play();
@@ -54,11 +54,15 @@ export default new SlashCommand({
         throw new Error("Queue not found. There was an unkonwn error.");
       }
 
-      let track = await queue.addTrack(query);
+      let tracks = await queue.addTrack(query);
 
-      await int.editReply(
-        `**\`${track.title}\`** has been added to the queue! 🎶`
-      );
+      if (tracks.length === 1) {
+        await int.editReply(`
+        **\`${tracks[0].title}\`** has been added to the queue! 🎶`);
+      } else {
+        await int.editReply(`
+        **\`${tracks.length}\`** tracks have been added to the queue! 🎶`);
+      }
     }
   }
 });

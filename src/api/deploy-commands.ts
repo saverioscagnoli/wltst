@@ -1,4 +1,4 @@
-import { Paths } from "@lib";
+import { Paths, table } from "@lib";
 import {
   ApplicationCommandDataResolvable,
   Client,
@@ -43,8 +43,12 @@ async function deployCommands(commands: ApplicationCommandDataResolvable[]) {
       { body: commands }
     )) as unknown[];
 
-    console.log(
-      chalk.green(`Successfully deployed ${data.length} (/) commands!`)
+    table(
+      commands.map(c => ({
+        // @ts-ignore
+        name: c.name,
+        status: "Deployed"
+      }))
     );
   } catch (err) {
     console.error(err);

@@ -1,3 +1,32 @@
+import { Console } from "console";
+import { Transform } from "stream";
+
+function table<T>(input: T[]) {
+  let ts = new Transform({
+    transform(chunk, enc, cb) {
+      cb(null, chunk);
+    }
+  });
+
+  let logger = new Console({ stdout: ts });
+
+  logger.table(input);
+
+  let table = (ts.read() || "").toString();
+  let result = "";
+
+  for (let row of table.split(/[\r\n]+/)) {
+    let r = row.replace(/[^┬]*┬/, "┌");
+    r = r.replace(/^├─*┼/, "├");
+    r = r.replace(/│[^│]*/, "");
+    r = r.replace(/^└─*┴/, "└");
+    r = r.replace(/'/g, " ");
+    result += `${r}\n`;
+  }
+
+  console.log(result);
+}
+
 function isYoutubeUrl(url: string) {
   return /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/.test(url);
 }
@@ -17,6 +46,7 @@ function formPlaylistRequestUrl(id: string) {
 }
 
 export {
+  table,
   isYoutubeUrl,
   isYoutubePlaylistUrl,
   formPlaylistRequestUrl,

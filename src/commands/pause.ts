@@ -1,8 +1,8 @@
 import { SlashCommand } from "@structs";
 
 export default new SlashCommand({
-  name: "queue",
-  description: "Display this server's queue, if any.",
+  name: "pause",
+  description: "Pause the current song, if not paused.",
   exe: async ({ int, queues }) => {
     if (!int.guildId || !int.guild) return;
 
@@ -17,8 +17,13 @@ export default new SlashCommand({
       return;
     }
 
-    await int.editReply({
-      embeds: [queue.toEmbed(int.guild.name, int.guild.iconURL() ?? undefined)]
-    });
+    if (queue.isPaused()) {
+      await int.editReply("The queue is already paused!");
+      return;
+    }
+
+    queue.pause();
+
+    await int.editReply("Paused! 🎶");
   }
 });

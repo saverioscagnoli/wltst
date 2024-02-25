@@ -21,7 +21,7 @@ class Track {
     this.url = url;
   }
 
-  public static async fromInfo(url: string) {
+  public static async fromUrl(url: string) {
     let { videoDetails: info } = await ytdl.getBasicInfo(url);
 
     return new Track(

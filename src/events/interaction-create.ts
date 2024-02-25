@@ -13,10 +13,19 @@ export default new Event(Events.InteractionCreate, async int => {
 
   if (!command) return;
 
-  command.exe({
-    args: int.options as CommandInteractionOptionResolver,
-    client: int.client,
-    int: int as Interaction,
-    queues
-  });
+  try {
+    command.exe({
+      args: int.options as CommandInteractionOptionResolver,
+      client: int.client,
+      int: int as Interaction,
+      queues
+    });
+  } catch (err) {
+    console.error(err);
+
+    await int.reply({
+      content: "There was an unknown error while executing this command! :(",
+      ephemeral: true
+    });
+  }
 });

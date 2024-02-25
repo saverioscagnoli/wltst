@@ -2,6 +2,7 @@ import {
   AudioPlayer,
   AudioPlayerStatus,
   VoiceConnection,
+  VoiceConnectionStatus,
   createAudioPlayer
 } from "@discordjs/voice";
 import { queues } from "@main";
@@ -28,6 +29,7 @@ class Queue {
     this.channel = channel;
     this.player = createAudioPlayer();
     this.tracks = [];
+
     this.nowPlaying = null;
   }
 
@@ -43,12 +45,12 @@ class Queue {
       let tracks: Track[] = [];
 
       for (let url of trackUrls) {
-        let track = await Track.fromInfo(url);
+        let track = await Track.fromUrl(url);
         this.tracks.push(track);
         tracks.push(track);
       }
 
-      return tracks[0];
+      return tracks;
     } else {
       let url = trackQuery;
 
@@ -56,10 +58,10 @@ class Queue {
         url = await youtubeSearch(trackQuery);
       }
 
-      let track = await Track.fromInfo(url);
+      let track = await Track.fromUrl(url);
       this.tracks.push(track);
 
-      return track;
+      return [track];
     }
   }
 
@@ -70,13 +72,16 @@ class Queue {
 
     this.player.on(AudioPlayerStatus.Idle, async () => {
       if (this.getLength() === 0) {
-        this.connection.destroy();
-        queues.delete(this.connection.joinConfig.guildId);
+        await this.end("Queue has ended. See ya suckers! 👋");
         return;
       }
 
       this.playTrack();
       await this.channel.send({ embeds: [this.nowPlaying!.toEmbed()] });
+    });
+
+    this.connection.on(VoiceConnectionStatus.Disconnected, async () => {
+      await this.end("I have been kicked! :(");
     });
   }
 
@@ -88,6 +93,27 @@ class Queue {
     this.player.stop();
   }
 
+  public pause() {
+    this.player.pause();
+  }
+
+  public resume() {
+    this.player.unpause();
+  }
+
+  public isPaused() {
+    return this.player.state.status === AudioPlayerStatus.Paused;
+  }
+
+  public async end(msg?: string) {
+    this.connection.destroy();
+    queues.delete(this.connection.joinConfig.guildId);
+
+    if (msg) {
+      await this.channel.send(msg);
+    }
+  }
+
   private playTrack() {
     let track = this.tracks.shift()!;
     let resource = track.getSource();
@@ -96,7 +122,7 @@ class Queue {
     this.nowPlaying = track;
   }
 
-  public toEmbed(guildName: string, guildIcon: string) {
+  public toEmbed(guildName: string, guildIcon?: string) {
     return new EmbedBuilder()
       .setAuthor({
         name: `Queue for ${guildName}`,
@@ -111,6 +137,7 @@ class Queue {
             )
             .join("\n")
       )
+      .setThumbnail(this.nowPlaying?.thumbnail!)
       .setColor(DEFAULT_EMBED_COLOR);
   }
 }
