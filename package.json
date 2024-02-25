@@ -1,0 +1,26 @@
+{
+  "name": "wltst",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "repository": "https://github.com/saverioscagnoli/wltst.git",
+  "author": "Saverio <svscagn@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "ts-node -r tsconfig-paths/register src/index.ts",
+    "build": "rimraf dist && tsc && tsc-alias",
+    "start": "node ."
+  },
+  "dependencies": {
+    "@discordjs/voice": "^0.16.1",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.20",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.8",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.3.3"
+  }
+}
