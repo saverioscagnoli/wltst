@@ -6,8 +6,8 @@ import {
 } from "@discordjs/voice";
 import { queues } from "@main";
 import { Track } from "./track";
-import { TrackType, isYoutubePlaylistUrl, isYoutubeUrl } from "@lib";
-import { getVideoUrlsFromPlaylist } from "@yt";
+import { isYoutubePlaylistUrl, isYoutubeUrl } from "@lib";
+import { getVideoUrlsFromPlaylist, youtubeSearch } from "@yt";
 import { TextBasedChannel } from "discord.js";
 
 interface QueueOptions {
@@ -36,32 +36,31 @@ class Queue {
   }
 
   public async addTrack(trackQuery: string) {
-    let type: TrackType;
-
     if (isYoutubePlaylistUrl(trackQuery)) {
-      let trackUrls = await getVideoUrlsFromPlaylist(
-        trackQuery.split("&list=")[1]
-      );
+      let id = trackQuery.split("&list=")[1];
+      let trackUrls = await getVideoUrlsFromPlaylist(id);
 
       let tracks: Track[] = [];
 
       for (let url of trackUrls) {
-        let track = await Track.build(url, TrackType.YoutubeUrl);
+        let track = await Track.fromInfo(url);
         this.tracks.push(track);
         tracks.push(track);
       }
 
       return tracks[0];
-    } else if (isYoutubeUrl(trackQuery)) {
-      type = TrackType.YoutubeUrl;
     } else {
-      type = TrackType.Query;
+      let url = trackQuery;
+
+      if (!isYoutubeUrl(trackQuery)) {
+        url = await youtubeSearch(trackQuery);
+      }
+
+      let track = await Track.fromInfo(url);
+      this.tracks.push(track);
+
+      return track;
     }
-
-    let track = await Track.build(trackQuery, type);
-    this.tracks.push(track);
-
-    return track;
   }
 
   public play() {

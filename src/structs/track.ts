@@ -1,7 +1,6 @@
-import { AudioResource, createAudioResource } from "@discordjs/voice";
-import { TrackType, YTDL_DEFAULT_OPTIONS } from "@lib";
+import { createAudioResource } from "@discordjs/voice";
+import { YTDL_DEFAULT_OPTIONS } from "@lib";
 import { EmbedBuilder } from "discord.js";
-import { search } from "@yt";
 import ytdl from "ytdl-core";
 
 class Track {
@@ -9,82 +8,32 @@ class Track {
   private author: ytdl.Author;
   private thumbnail: string;
   private url: string;
-  private source: AudioResource<null>;
 
-  public static async build(query: string, type: TrackType) {
-    let [resource, info] = await Track.createResource(query, type);
-
-    return new Track(
-      info.title,
-      info.author,
-      info.thumbnail,
-      info.url,
-      resource
-    );
-  }
-
-  private constructor(
+  public constructor(
     title: string,
     author: ytdl.Author,
     thumbnail: string,
-    url: string,
-    resource: AudioResource<null>
+    url: string
   ) {
     this.title = title;
     this.author = author;
     this.thumbnail = thumbnail;
     this.url = url;
-    this.source = resource;
   }
 
-  private static async createResource(query: string, type: TrackType) {
-    let resource: AudioResource<null>;
+  public static async fromInfo(url: string) {
+    let { videoDetails: info } = await ytdl.getBasicInfo(url);
 
-    let title: string;
-    let author: ytdl.Author;
-    let thumbnail: string;
-    let url: string;
-
-    switch (type) {
-      case TrackType.YoutubeUrl:
-        {
-          let info = await ytdl.getInfo(query);
-          let video = info.videoDetails;
-          title = video.title;
-          author = video.author;
-          thumbnail = video.thumbnails[0].url;
-          url = video.video_url;
-
-          resource = createAudioResource(ytdl(query, YTDL_DEFAULT_OPTIONS));
-        }
-        break;
-      case TrackType.Query:
-        {
-          let firstUrl = await search(query);
-
-          let info = await ytdl.getInfo(firstUrl);
-          let video = info.videoDetails;
-
-          title = video.title;
-          author = video.author;
-          thumbnail = video.thumbnails[0].url;
-          url = video.video_url;
-
-          resource = createAudioResource(
-            ytdl(video.video_url, YTDL_DEFAULT_OPTIONS)
-          );
-        }
-        break;
-
-      default:
-        throw new Error("Invalid track type");
-    }
-
-    return [resource, { title, author, thumbnail, url }] as const;
+    return new Track(
+      info.title,
+      info.author,
+      info.thumbnails[0].url,
+      info.video_url
+    );
   }
 
   public getSource() {
-    return this.source;
+    return createAudioResource(ytdl(this.url, YTDL_DEFAULT_OPTIONS));
   }
 
   public toEmbed() {

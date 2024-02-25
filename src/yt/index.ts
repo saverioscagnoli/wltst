@@ -6,7 +6,7 @@ import {
 import { fetch } from "undici";
 import { PlaylistResponse, SearchResponse } from "./types";
 
-async function search(query: string) {
+async function youtubeSearch(query: string) {
   let url = formSearchRequestUrl(query);
   let res = await fetch(url);
 
@@ -29,4 +29,4 @@ async function getVideoUrlsFromPlaylist(id: string) {
   return urls;
 }
 
-export { search, getVideoUrlsFromPlaylist };
+export { youtubeSearch, getVideoUrlsFromPlaylist };
