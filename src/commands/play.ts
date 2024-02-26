@@ -42,9 +42,7 @@ export default new SlashCommand({
 
       let tracks = await queue.addTrack(query);
 
-      await int.editReply({
-        embeds: [tracks[0].toEmbed()]
-      });
+      await Track.sendEmbed(tracks[0], int);
 
       queue.play();
     } else {

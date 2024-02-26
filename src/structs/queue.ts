@@ -7,7 +7,12 @@ import {
 } from "@discordjs/voice";
 import { queues } from "@main";
 import { Track } from "./track";
-import { DEFAULT_EMBED_COLOR, isYoutubePlaylistUrl, isYoutubeUrl } from "@lib";
+import {
+  DEFAULT_EMBED_COLOR,
+  isDirectAudioUrl,
+  isYoutubePlaylistUrl,
+  isYoutubeUrl
+} from "@lib";
 import { getVideoUrlsFromPlaylist, youtubeSearch } from "@yt";
 import { EmbedBuilder, TextBasedChannel } from "discord.js";
 
@@ -54,7 +59,7 @@ class Queue {
     } else {
       let url = trackQuery;
 
-      if (!isYoutubeUrl(trackQuery)) {
+      if (!isYoutubeUrl(trackQuery) && !isDirectAudioUrl(trackQuery)) {
         url = await youtubeSearch(trackQuery);
       }
 
@@ -77,7 +82,8 @@ class Queue {
       }
 
       this.playTrack();
-      await this.channel.send({ embeds: [this.nowPlaying!.toEmbed()] });
+
+      await Track.sendEmbed(this.nowPlaying!, this.channel);
     });
 
     this.connection.on(VoiceConnectionStatus.Disconnected, async () => {

@@ -37,6 +37,13 @@ function isYoutubePlaylistUrl(url: string) {
   );
 }
 
+function isDirectAudioUrl(url: string) {
+  let extensions = ["mp3", "wav", "ogg", "flac", "aac", "m4a"];
+  let ext = url.split(".").pop();
+
+  return !!ext && extensions.includes(ext);
+}
+
 function formSearchRequestUrl(query: string) {
   return `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q=${query}&key=${process.env.YT_API_KEY}`;
 }
@@ -49,6 +56,7 @@ export {
   table,
   isYoutubeUrl,
   isYoutubePlaylistUrl,
+  isDirectAudioUrl,
   formPlaylistRequestUrl,
   formSearchRequestUrl
 };
